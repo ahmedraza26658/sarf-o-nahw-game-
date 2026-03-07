@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faizan-e-Sarf o Nahw</title>
+    <link href="https://fonts.googleapis.com" rel="stylesheet">
+    <style>
+        :root { --primary: #0b5345; --secondary: #d4ac0d; --white: #ffffff; }
+        body { font-family: 'Noto Nastaliq Urdu', serif; background: #e5e8e8; margin: 0; display: flex; justify-content: center; }
+        .app-container { width: 100%; max-width: 450px; min-height: 100vh; background: var(--white); box-shadow: 0 0 20px rgba(0,0,0,0.2); position: relative; overflow: hidden; border: 5px solid var(--primary); display: flex; flex-direction: column; }
+        
+        .game-header { padding: 40px 15px; text-align: center; flex-grow: 1; }
+        .game-title { font-family: 'Gulzar', serif; font-size: 3.8em; color: var(--primary); margin: 0; line-height: 1.3; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); }
+        
+        .books-list { margin-top: 20px; }
+        .book-name-big { display: block; font-size: 1.8em; font-weight: bold; color: var(--primary); margin: 10px 0; border-bottom: 2px solid var(--secondary); padding-bottom: 5px; }
+        .link-btn { display: inline-block; padding: 5px 15px; background: #eee; border-radius: 5px; color: #1a5276; text-decoration: none; font-size: 0.8em; border: 1px solid #ccc; margin-bottom: 5px; }
+
+        .screen { display: none; padding: 20px; text-align: center; min-height: 450px; position: relative; z-index: 2; flex-grow: 1; }
+        .active { display: block; }
+
+        .btn { display: block; width: 85%; margin: 15px auto; padding: 18px; background: var(--primary); color: white; border: none; border-radius: 15px; font-size: 1.3em; cursor: pointer; box-shadow: 0 5px #063129; transition: 0.2s; }
+        .btn:active { transform: translateY(3px); box-shadow: 0 2px #063129; }
+        
+        .option-btn { background: #fdfefe; color: #333; border: 2px solid #ddd; text-align: right; padding-right: 20px; box-shadow: none; font-size: 1.1em; }
+        .option-btn.selected { background: #d1f2eb; border-color: var(--primary); font-weight: bold; }
+
+        /* Credits Footer */
+        .credits-footer { background: var(--primary); color: white; padding: 15px; font-size: 0.9em; line-height: 1.6; border-top: 3px solid var(--secondary); text-align: center; }
+        .credits-footer b { color: var(--secondary); font-size: 1.1em; }
+
+        .bg-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 11em; opacity: 0.04; color: var(--primary); pointer-events: none; z-index: 1; font-family: 'Gulzar'; }
+        .result-card { background: #fff; padding: 35px; border-radius: 20px; border: 4px double var(--primary); margin-top: 20px; }
+        .score-display { font-size: 4.5em; color: var(--secondary); font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div id="dynamic-bg" class="bg-text"></div>
+
+    <!-- HOME PAGE -->
+    <div id="home" class="screen active">
+        <div class="game-header">
+            <h1 class="game-title">فیضانِ<br>صرف و نحو</h1>
+            
+            <div class="books-list">
+                <span class="book-name-big">نصاب الصرف</span>
+                <a href="https://archive.org" class="link-btn" target="_blank">کتاب پڑھیں (PDF)</a>
+                
+                <span class="book-name-big">خلاصۃ النحو</span>
+                <a href="https://play.google.com" class="link-btn" target="_blank">کتاب ایپ ڈاؤن لوڈ کریں</a>
+            </div>
+
+            <button class="btn" style="margin-top:20px; background:var(--secondary); box-shadow: 0 5px #b08d0a;" onclick="showScreen('category')">گیم شروع کریں</button>
+        </div>
+
+        <!-- Your Name Section -->
+        <div class="credits-footer">
+            Created By: <b>Muhammad Ahmed Raza Attari</b><br>
+            Jamia tul Madinah Misriyal Rawalpindi
+        </div>
+    </div>
+
+    <!-- CATEGORY SELECTION -->
+    <div id="category" class="screen">
+        <h2 style="margin-top:60px; color:var(--primary); font-size: 2.2em;">موضوع منتخب کریں</h2>
+        <button class="btn" style="background:#1d8348; box-shadow:0 5px #145a32" onclick="selectSubject('sarf')">علم الصرف</button>
+        <button class="btn" style="background:#7d3c98; box-shadow:0 5px #512e5f" onclick="selectSubject('nahw')">علم النحو</button>
+        <button class="btn" style="background:#555; box-shadow:0 5px #333" onclick="showScreen('home')">واپس جائیں</button>
+    </div>
+
+    <!-- GAMEPLAY -->
+    <div id="gameplay" class="screen">
+        <div style="display:flex; justify-content:space-between; margin-bottom: 25px;">
+            <span id="q-counter" style="color:var(--primary); font-weight:bold; font-size:1.2em;">سوال: 1/10</span>
+            <span id="subject-label" style="background:var(--secondary); padding:5px 15px; border-radius:8px; font-size:1em; font-weight:bold;">صرف</span>
+        </div>
+        <div style="min-height: 140px; display:flex; align-items:center; justify-content:center; background:#f9f9f9; border-radius:15px; padding:10px; margin-bottom:20px; border:1px solid #eee;">
+            <h3 id="question-text" style="font-size:1.4em; line-height:1.7; margin:0;">سوال لوڈ ہو رہا ہے...</h3>
+        </div>
+        <div id="options-container"></div>
+        <button class="btn" id="next-btn" style="margin-top:25px; background:var(--secondary); box-shadow: 0 5px #b08d0a;" onclick="nextQuestion()">اگلا سوال</button>
+    </div>
+
+    <!-- RESULT -->
+    <div id="result" class="screen">
+        <div class="result-card">
+            <h2 style="color:var(--primary)">آپ کا رزلٹ</h2>
+            <div class="score-display" id="final-score">0/10</div>
+            <p id="result-msg" style="font-size:1.3em; margin:20px 0;"></p>
+            <button class="btn" onclick="showScreen('category')">دوبارہ کھیلیں</button>
+            <button class="btn" style="background:#555; box-shadow:0 5px #333" onclick="showScreen('home')">ہوم پر جائیں</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentSubject = '';
+    let questions = [];
+    let qIndex = 0;
+    let score = 0;
+    let selectedIdx = null;
+
+    const db = {
+        sarf: [
+            { q: "وہ علم جس میں کلمات کی ساخت اور تبدیلیوں سے بحث ہو؟", opt: ["علم النحو", "علم الصرف", "علم المیراث", "علم الفقہ"], a: 1 },
+            { q: "لفظ 'کلمہ' کی کتنی اقسام ہیں؟", opt: ["دو", "تین", "چار", "پانچ"], a: 1 },
+            { q: "فعل ماضی کی کتنی گردانیں مشہور ہیں؟", opt: ["4", "6", "10", "14"], a: 3 },
+            { q: "جس اسم سے کام کرنے والا سمجھا جائے؟", opt: ["اسم مفعول", "اسم فاعل", "اسم ظرف", "اسم آلہ"], a: 1 },
+            { q: "ثلاثی مجرد کے کتنے ابواب ہیں؟", opt: ["4", "5", "6", "8"], a: 2 },
+            { q: "وہ کلمہ جو دوسرے کلمے کے ملے بغیر معنی نہ دے؟", opt: ["اسم", "فعل", "حرف", "جملہ"], a: 2 },
+            { q: "اسم کی وہ قسم جو کسی خاص چیز کا نام ہو؟", opt: ["اسم نکرہ", "اسم معرفہ", "اسم آلہ", "اسم صفت"], a: 1 },
+            { q: "وہ فعل جس میں کام کا ہونا گزرے ہوئے زمانے میں پایا جائے؟", opt: ["فعل حال", "فعل ماضی", "فعل مستقبل", "فعل امر"], a: 1 },
+            { q: "واحد سے زیادہ افراد پر دلالت کرنے والا اسم؟", opt: ["تثنیہ", "جمع", "مفرد", "مشتق"], a: 1 },
+            { q: "جس اسم سے کام کا آلہ سمجھا جائے؟", opt: ["اسم آلہ", "اسم مفعول", "اسم فاعل", "اسم ظرف"], a: 0 }
+        ],
+        nahw: [
+            { q: "وہ علم جس میں جملے کے اجزاء کی ترتیب سے بحث ہو؟", opt: ["علم الصرف", "علم النحو", "علم البلاغت", "علم التجوid"], a: 1 },
+            { q: "جملہ اسمیہ کے پہلے جز کو کیا کہتے ہیں؟", opt: ["خبر", "مبتدا", "فاعل", "مفعول"], a: 1 },
+            { q: "حروفِ جارہ کی کل تعداد کتنی ہے؟", opt: ["10", "15", "17", "20"], a: 2 },
+            { q: "جملہ فعلیہ کا پہلا جز کیا ہوتا ہے؟", opt: ["اسم", "فعل", "حرف", "ضمیر"], a: 1 },
+            { q: "جس پر فعل واقع ہو اسے کیا کہتے ہیں؟", opt: ["فاعل", "اسم", "مفعول", "صفت"], a: 2 },
+            { q: "مبتدا اور خبر مل کر کون سا جملہ بناتے ہیں؟", opt: ["جملہ فعلیہ", "جملہ اسمیہ", "جملہ معترضہ", "جملہ انشائیہ"], a: 1 },
+            { q: "حروفِ مشبہ بالفعل کتنے ہیں؟", opt: ["5", "6", "7", "8"], a: 1 },
+            { q: "وہ اسم جو کسی کی اچھائی یا برائی بیان کرے؟", opt: ["اسم موصول", "صفت", "موصوف", "فاعل"], a: 1 },
+            { q: "کان (كان) کیا عمل کرتا ہے؟", opt: ["اسم کو رفع خبر کو نصب", "اسم کو نصب خبر ko رفع", "دونوں کو رفع", "دونوں کو نصب"], a: 0 },
+            { q: "جملہ میں کام کرنے والے کو کیا کہتے ہیں؟", opt: ["مفعول", "فاعل", "فعل", "حرف"], a: 1 }
+        ]
+    };
+
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    function selectSubject(sub) {
+        currentSubject = sub;
+        document.getElementById('dynamic-bg').innerText = sub === 'sarf' ? 'صرف' : 'نحو';
+        document.getElementById('subject-label').innerText = sub === 'sarf' ? 'علم الصرف' : 'علم النحو';
+        questions = db[sub]; 
+        qIndex = 0; score = 0;
+        loadQ();
+        showScreen('gameplay');
+    }
+
+    function loadQ() {
+        let q = questions[qIndex];
+        document.getElementById('q-counter').innerText = `سوال: ${qIndex + 1}/${questions.length}`;
+        document.getElementById('question-text').innerText = q.q;
+        let container = document.getElementById('options-container');
+        container.innerHTML = '';
+        q.opt.forEach((o, i) => {
+            container.innerHTML += `<button class="btn option-btn" onclick="sel(${i}, this)">${o}</button>`;
+        });
+        selectedIdx = null;
+    }
+
+    function sel(i, btn) {
+        document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        selectedIdx = i;
+    }
+
+    function nextQuestion() {
+        if(selectedIdx === null) return alert("براہ کرم جواب منتخب کریں!");
+        if(selectedIdx === questions[qIndex].a) score++;
+        
+        qIndex++;
+        if(qIndex < questions.length) loadQ();
+        else finish();
+    }
+
+    function finish() {
+        document.getElementById('final-score').innerText = `${score}/${questions.length}`;
+        document.getElementById('result-msg').innerText = score >= 7 ? "ماشاء اللہ! آپ کی کارکردگی بہت عمدہ ہے۔" : "کوشش کریں کہ مزید مطالعہ کر کے دوبارہ ٹیسٹ دیں۔";
+        showScreen('result');
+    }
+</script>
+
+</body>
+</html>
+
+
