@@ -1,0 +1,15 @@
+{
+  "name": "Faizan-e-Sarf o Nahw",
+  "short_name": "SarfNahw",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#0b5345",
+  "theme_color": "#0b5345",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
