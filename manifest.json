@@ -5,11 +5,14 @@
   "display": "standalone",
   "background_color": "#0b5345",
   "theme_color": "#0b5345",
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "https://cdn-icons-png.flaticon.com",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
+
